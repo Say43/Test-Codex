@@ -83,4 +83,69 @@ mountains.forEach((m) => {
       backgroundColor: Cesium.Color.fromCssColorString("rgba(13,32,68,0.85)"),
       horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-      pixelOffset: new Cesium.Cartesian2(0, -2
+      pixelOffset: new Cesium.Cartesian2(0, -24),
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      translucencyByDistance: new Cesium.NearFarScalar(200000, 1, 1200000, 0),
+      heightReference: Cesium.HeightReference.NONE,
+    },
+  });
+  entity.mountainRef = m;
+  m.entity = entity;
+});
+
+/* Klicklogik auf Punkte */
+const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+handler.setInputAction((click) => {
+  const picked = viewer.scene.pick(click.position);
+  if (Cesium.defined(picked) && picked.id && picked.id.mountainRef) {
+    const mountain = picked.id.mountainRef;
+    if (currentMode === "none") {
+      setMountainStatus(mountain, "none");
+    } else if (mountain.status === currentMode) {
+      setMountainStatus(mountain, "none");
+    } else {
+      setMountainStatus(mountain, currentMode);
+    }
+  }
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+/* Status färben + Listen aktualisieren */
+function setMountainStatus(m, status) {
+  m.status = status;
+  const p = m.entity.point;
+  if (!p) return;
+  let c = neutralColor;
+  if (status === "planned")   c = plannedColor;
+  if (status === "completed") c = completedColor;
+  p.color = Cesium.Color.clone(c);
+  updateTourenbuch();
+}
+
+function updateTourenbuch() {
+  const plannedList   = document.getElementById("planned-list");
+  const completedList = document.getElementById("completed-list");
+  plannedList.innerHTML = "";
+  completedList.innerHTML = "";
+
+  mountains
+    .filter((m) => m.status === "planned")
+    .sort((a, b) => b.height - a.height)
+    .forEach((m) => plannedList.appendChild(li(m)));
+
+  mountains
+    .filter((m) => m.status === "completed")
+    .sort((a, b) => b.height - a.height)
+    .forEach((m) => completedList.appendChild(li(m)));
+}
+
+function li(m) {
+  const el = document.createElement("li");
+  el.textContent = m.name;
+  const s = document.createElement("span");
+  s.textContent = `${m.height.toLocaleString("de-DE")} m`;
+  el.appendChild(s);
+  return el;
+}
+
+/* Initiale Listenbefüllung */
+updateTourenbuch();
