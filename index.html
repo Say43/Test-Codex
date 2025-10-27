@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="de">
   <head>
-    <!-- muss VOR Cesium.js stehen -->
-  <script>
-    window.CESIUM_BASE_URL = "https://unpkg.com/cesium/Build/Cesium/";
-  </script>
-
+    <!-- Muss VOR Cesium.js stehen -->
+    <script>
+      window.CESIUM_BASE_URL = "https://unpkg.com/cesium/Build/Cesium/";
+    </script>
     <link href="https://unpkg.com/cesium/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-  <script src="https://unpkg.com/cesium/Build/Cesium/Cesium.js"></script>
+    <script src="https://unpkg.com/cesium/Build/Cesium/Cesium.js"></script>
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,8 +17,9 @@
       html, body { margin: 0; height: 100%; }
       .layout { display: grid; grid-template-columns: 2fr 1fr; height: 100vh; }
       #map-container { position: relative; background: #f7f7f7; }
-      #map-container canvas { display: block; width: 100%; height: 100%; }
-      .controls { position: absolute; top: 12px; left: 12px; background: #fff; padding: 10px 12px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,.1); font-family: system-ui, sans-serif; }
+      /* WICHTIG: Cesium braucht ein DIV, das die ganze Fläche füllt */
+      #viewer { position: absolute; inset: 0; }
+      .controls { position: absolute; top: 12px; left: 12px; background: #fff; padding: 10px 12px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,.1); font-family: system-ui, sans-serif; z-index: 10; }
       .controls label { display: flex; align-items: center; gap: 8px; margin: 6px 0; cursor: pointer; }
       .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
       .swatch.planned { background: #2f6fff; }
@@ -36,52 +36,32 @@
     <main class="layout">
       <section id="map-container" aria-label="Interaktive Alpenkarte">
         <div class="controls" role="radiogroup" aria-label="Markierungsmodus">
-          <label>
-            <input type="radio" name="selection" value="planned" checked />
-            <span class="swatch planned"></span>
-            Geplante Tour
-          </label>
-          <label>
-            <input type="radio" name="selection" value="completed" />
-            <span class="swatch completed"></span>
-            Bestiegener Berg
-          </label>
-          <label>
-            <input type="radio" name="selection" value="none" />
-            <span class="swatch none"></span>
-            Markierung entfernen
-          </label>
+          <label><input type="radio" name="selection" value="planned" checked /><span class="swatch planned"></span>Geplante Tour</label>
+          <label><input type="radio" name="selection" value="completed" /><span class="swatch completed"></span>Bestiegener Berg</label>
+          <label><input type="radio" name="selection" value="none" /><span class="swatch none"></span>Markierung entfernen</label>
         </div>
 
-        <!-- Canvas für Three.js -->
-        <canvas id="scene"></canvas>
+        <!-- Cesium rendert hier hinein -->
+        <div id="viewer"></div>
       </section>
 
       <aside id="tourenbuch" aria-label="Tourenbuch">
         <h1>Tourenbuch</h1>
-        <p class="hint">
-          Markiere Berge auf der Karte, um sie hier als geplante Tour oder
-          bestiegenen Gipfel zu verwalten.
-        </p>
+        <p class="hint">Markiere Berge auf der Karte, um sie hier zu verwalten.</p>
         <div class="touren-liste">
           <section>
-            <h2>
-              <span class="swatch planned"></span>
-              Geplante Touren
-            </h2>
+            <h2><span class="swatch planned"></span> Geplante Touren</h2>
             <ul id="planned-list" aria-live="polite"></ul>
           </section>
           <section>
-            <h2>
-              <span class="swatch completed"></span>
-              Bestiegene Berge
-            </h2>
+            <h2><span class="swatch completed"></span> Bestiegene Berge</h2>
             <ul id="completed-list" aria-live="polite"></ul>
           </section>
         </div>
       </aside>
     </main>
 
+    <!-- Dein Cesium-basiertes Skript greift auf window.Cesium zu -->
     <script type="module" src="./app.js"></script>
   </body>
 </html>
