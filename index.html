@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alpen Tourenbuch</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/cesium@1.111.0/Build/Cesium/Widgets/widgets.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script
+      src="https://unpkg.com/cesium@1.111.0/Build/Cesium/Cesium.js"
+      defer
+    ></script>
+    <script type="module" src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="layout">
+      <section id="map-panel" aria-label="Interaktive Alpenkarte">
+        <div id="viewer" role="presentation"></div>
+        <div class="controls" role="radiogroup" aria-label="Markierungsmodus">
+          <h1>Alpenkarte</h1>
+          <p>Wähle eine Markierungsfarbe und klicke auf einen Gipfel.</p>
+          <label>
+            <input type="radio" name="selection" value="planned" checked />
+            <span class="swatch planned"></span>
+            Geplante Tour
+          </label>
+          <label>
+            <input type="radio" name="selection" value="completed" />
+            <span class="swatch completed"></span>
+            Bestiegener Berg
+          </label>
+          <label>
+            <input type="radio" name="selection" value="none" />
+            <span class="swatch none"></span>
+            Markierung entfernen
+          </label>
+        </div>
+      </section>
+      <aside id="tourenbuch" aria-label="Tourenbuch">
+        <h1>Tourenbuch</h1>
+        <p class="hint">
+          Markiere Berge auf der Karte, um sie hier als geplante Tour oder
+          bestiegenen Gipfel zu verwalten.
+        </p>
+        <div class="touren-liste">
+          <section>
+            <h2>
+              <span class="swatch planned"></span>
+              Geplante Touren
+            </h2>
+            <ul id="planned-list" aria-live="polite"></ul>
+          </section>
+          <section>
+            <h2>
+              <span class="swatch completed"></span>
+              Bestiegene Berge
+            </h2>
+            <ul id="completed-list" aria-live="polite"></ul>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </body>
+</html>
